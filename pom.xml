@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>pizza-shop</artifactId>
     <groupId>io.contino</groupId>
-    <version>0.0.1</version>
+    <version>0.0.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -15,5 +13,54 @@
         <module>pizza-shop-repository</module>
         <module>pizza-shop-transformer</module>
     </modules>
+
+    <scm>
+        <connection>scm:git:https://github.com/dermotmburke/pizza-shop.git</connection>
+        <developerConnection>scm:git:https://github.com/dermotmburke/pizza-shop.git</developerConnection>
+        <url>https://github.com/dermotmburke/pizza-shop</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <goals>deploy</goals>
+                    <arguments>-DskipTests -Dmaven.deploy.skip=true</arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.kokuwa.maven</groupId>
+                <artifactId>helm-maven-plugin</artifactId>
+                <version>6.17.0</version>
+                <configuration>
+                    <helmVersion>3.17.0</helmVersion>
+                    <chartDirectory>chart</chartDirectory>
+                    <chartVersion>${project.version}</chartVersion>
+                    <appVersion>${project.version}</appVersion>
+                    <uploadRepoStable>
+                        <name>ghcr</name>
+                        <url>ghcr.io/dermotmburke</url>
+                        <username>${env.REGISTRY_USERNAME}</username>
+                        <password>${env.REGISTRY_PASSWORD}</password>
+                    </uploadRepoStable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>init</goal>
+                            <goal>package</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
